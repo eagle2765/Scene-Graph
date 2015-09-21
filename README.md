@@ -16,23 +16,23 @@ scenes:
 
 - single div, translated -200 in z, camera translated by (-100,50,200)
 
-![scene 1](https://github.gatech.edu/pages/cs3451f15/a2solution/img/ex1a.png)
+![scene 1](https://github.gatech.edu/pages/cs3451f15/a2/img/ex1a.png)
 
 - single div, translated 200 in z so it fills the view
 
-![scene 2](https://github.gatech.edu/pages/cs3451f15/a2solution/img/ex1b.png)
+![scene 2](https://github.gatech.edu/pages/cs3451f15/a2/img/ex1b.png)
 
 - single div, rotated by 35 degrees around X
 
-![scene 3](https://github.gatech.edu/pages/cs3451f15/a2solution/img/ex1c.png)
+![scene 3](https://github.gatech.edu/pages/cs3451f15/a2/img/ex1c.png)
 
 - two divs, transformed to be 90 degrees rotated on an edge, with a camera rotation
 
-![scene 1](https://github.gatech.edu/pages/cs3451f15/a2solution/img/ex1d.png)
+![scene 1](https://github.gatech.edu/pages/cs3451f15/a2/img/ex1d.png)
 
 - single div, rotating, with camera rotating as well
 
-![scene 1](https://github.gatech.edu/pages/cs3451f15/a2solution/img/ex1e.gif)
+![scene 1](https://github.gatech.edu/pages/cs3451f15/a2/img/ex1e.gif)
 
 ## Due: Friday Oct 2nd, 5pm
 
