@@ -143,8 +143,8 @@ export class Thing {
     rotation: Matrix;
     scale: Vector;
     
-    // the transform should be computed from position, rotation and scale, NOT set by the 
-    // programmer using this library
+    // the transform should be computed as position * rotation * scale, and NOT be set by the 
+    // programmer who is using this library
     transform: Matrix;
     
     // inverse should be computed 
@@ -164,7 +164,7 @@ export class Thing {
         this.worldTransform = Matrix.identity();
     }
 
-    // compute transform and inverseTransform from position, rotation, scale
+    // compute transform from position * rotation * scale and inverseTransform from their inverses 
     computeTransforms() {
     }    
 
