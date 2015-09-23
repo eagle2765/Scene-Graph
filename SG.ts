@@ -104,12 +104,12 @@ export class Matrix {
 
     // create a new translation matrix from the input vector
     // t.x, t.y, t.z contain the translation values in each direction
-	static makeTranslation(t: Vector) {
+	static makeTranslation(t: Vector): Matrix {
 	}
 
     // create a new scale matrix from the input vector
     // s.x, s.y, s.z contain the scale values in each direction
-	static makeScale(s: Vector) {
+	static makeScale(s: Vector): Matrix {
     }
         
     // compose transformations with multiplication.  Multiply this * b, 
@@ -118,15 +118,15 @@ export class Matrix {
 	}
 
     // get the translation/positional componenet out of the matrix
-    getPosition() {
+    getPosition(): Vector {
     }
     
     // get the x, y and z vectors out of the rotation part of the matrix
-    getXVector() {
+    getXVector(): Vector {
     }
-    getYVector() {
+    getYVector(): Vector {
     }
-    getZVector() {
+    getZVector(): Vector {
     }
 }
 
@@ -303,7 +303,7 @@ export class Scene {
 
     // convenience function provided so you don't have to fight with this.  
     // we invert Y here, as described above
-    getObjectCSSMatrix( m: Matrix ) {
+    getObjectCSSMatrix( m: Matrix ): string {
 		var elements = m.elements;
 
 		return 'matrix3d(' +
