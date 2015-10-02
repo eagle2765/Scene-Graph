@@ -82,10 +82,27 @@ export class Matrix {
 
     // transpose the matrix, returning a new matrix with the result
     static transpose(m: Matrix): Matrix {
+        // array representation of matrix m
+        var te = new Array<number>( 16 );
+        te[ 0 ] = m.elements[0]; te[ 4 ] = m.elements[4]; te[ 8 ] = m.elements[8]; te[ 12 ] = m.elements[12];
+		te[ 1 ] = m.elements[1]; te[ 5 ] = m.elements[5]; te[ 9 ] = m.elements[9]; te[ 13 ] = m.elements[13];
+		te[ 2 ] = m.elements[2]; te[ 6 ] = m.elements[6]; te[ 10 ] = m.elements[10]; te[ 14 ] = m.elements[14];
+		te[ 3 ] = m.elements[3]; te[ 7 ] = m.elements[7]; te[ 11 ] = m.elements[11]; te[ 15 ] = m.elements[15];
+        
+        return new Matrix(te[0], te[4], te[8], te[12], te[1], te[5], te[9], te[13], te[2], te[6], te[10], te[14], te[3], te[7], te[11], te[15]);
     }     
 
     // copy the matrix to a new matrix
 	static copy (m: Matrix): Matrix {
+        // array representation of matrix m
+        var te = new Array<number>( 16 );
+        te[ 0 ] = m.elements[0]; te[ 4 ] = m.elements[4]; te[ 8 ] = m.elements[8]; te[ 12 ] = m.elements[12];
+		te[ 1 ] = m.elements[1]; te[ 5 ] = m.elements[5]; te[ 9 ] = m.elements[9]; te[ 13 ] = m.elements[13];
+		te[ 2 ] = m.elements[2]; te[ 6 ] = m.elements[6]; te[ 10 ] = m.elements[10]; te[ 14 ] = m.elements[14];
+		te[ 3 ] = m.elements[3]; te[ 7 ] = m.elements[7]; te[ 11 ] = m.elements[11]; te[ 15 ] = m.elements[15];
+        
+        return new Matrix(te[0], te[1], te[2], te[3], te[4], te[5], te[6], te[7], te[8], te[9], te[10], te[11], te[12], te[13], te[14], te[15]);
+        
 	}
 
     // return a new matrix containing the identify matrix
@@ -99,34 +116,123 @@ export class Matrix {
     // create a new rotation matrix from the input vector. 
     // eu.x, eu.y, eu.z contain the rotations in degrees around the three axes. 
     // Apply the rotations in the order x, y, z.
-    static makeRotationFromEuler (eu: Vector): Matrix {        
+    static makeRotationFromEuler (eu: Vector): Matrix {      
+        // x rotation matrix
+        var xmatrix = new Matrix(1, 0, 0, 0,
+                                 0, Math.cos(eu.x), -Math.sin(eu.x), 0,
+                                 0, Math.sin(eu.x), Math.cos(eu.x), 0,
+                                 0, 0, 0, 1)
+
+        
+        // y rotation matrix
+        var ymatrix = new Matrix(Math.cos(eu.y), 0, Math.sin(eu.y), 0,
+                                 0, 1, 0, 0,
+                                 -Math.sin(eu.y), 0, Math.cos(eu.y), 0,
+                                 0, 0, 0, 1)
+
+        // z rotation matrix
+        var zmatrix = new Matrix(Math.cos(eu.z), -Math.sin(eu.z), 0, 0,
+                                 Math.sin(eu.z), Math.cos(eu.z), 0, 0,
+                                 0, 0, 1, 0,
+                                 0, 0, 0, 1)
+        // multiply rotations
+        xmatrix = xmatrix.multiply(ymatrix);
+        xmatrix = xmatrix.multiply(zmatrix);
+        return xmatrix;
 	}
 
     // create a new translation matrix from the input vector
     // t.x, t.y, t.z contain the translation values in each direction
 	static makeTranslation(t: Vector): Matrix {
+        return new Matrix(1, 0, 0, t.x, 0, 1, 0, t.y, 0, 0, 1, t.z, 0, 0, 0, 1);
 	}
 
     // create a new scale matrix from the input vector
     // s.x, s.y, s.z contain the scale values in each direction
 	static makeScale(s: Vector): Matrix {
+        return new Matrix(s.x, 0, 0, 0,
+                            0, s.y, 0, 0,
+                            0, 0, s.z, 0,
+                            0, 0, 0, 1)
     }
         
     // compose transformations with multiplication.  Multiply this * b, 
     // returning the result in a new matrix
    	multiply (b: Matrix ): Matrix {
+        // array representation of this matrix
+        var n11; var n12; var n13; var n14;
+        var n21; var n22; var n23; var n24;
+        var n31; var n32; var n33; var n34;
+        var n41; var n42; var n43; var n44;
+        
+        // array repesntation of b matrix
+        var b11; var b12; var b13; var b14;
+        var b21; var b22; var b23; var b24;
+        var b31; var b32; var b33; var b34;
+        var b41; var b42; var b43; var b44;
+        
+        // new matrix
+        var x11; var x12; var x13; var x14;
+        var x21; var x22; var x23; var x24;
+        var x31; var x32; var x33; var x34;
+        var x41; var x42; var x43; var x44;
+        
+
+        // this matrix
+        n11 = this.elements[0]; n12 = this.elements[4]; n13 = this.elements[8]; n14= this.elements[12];
+        n21 = this.elements[1]; n22 = this.elements[5]; n23 = this.elements[9]; n24= this.elements[13];
+        n31 = this.elements[2]; n32 = this.elements[6]; n33 = this.elements[10]; n34= this.elements[14];
+        n41 = this.elements[3]; n42 = this.elements[7]; n43 = this.elements[11]; n44= this.elements[15];
+        
+        // b matrix
+        b11 = b.elements[0]; b12 = b.elements[4]; b13 = b.elements[8]; b14= b.elements[12];
+        b21 = b.elements[1]; b22 = b.elements[5]; b23 = b.elements[9]; b24= b.elements[13];
+        b31 = b.elements[2]; b32 = b.elements[6]; b33 = b.elements[10]; b34= b.elements[14];
+        b41 = b.elements[3]; b42 = b.elements[7]; b43 = b.elements[11]; b44= b.elements[15];
+        
+        // math for multiplied matrix
+        x11 = n11*b11 + n12*b21 + n13*b31 + n14*b41;
+        x12 = n11*b12 + n12*b22 + n13*b32 + n14*b42
+        x13 = n11*b13 + n12*b23 + n13*b33 + n14*b43;
+        x14 = n11*b14 + n12*b24 + n13*b34 + n14*b44;
+        
+        x21 = n21*b11 + n22*b21 + n23*b31 + n24*b41;
+        x22 = n21*b12 + n22*b22 + n23*b32 + n24*b42;
+        x23 = n21*b13 + n22*b23 + n23*b33 + n24*b43;
+        x24 = n21*b14 + n22*b24 + n23*b34 + n24*b44;
+        
+        x31 = n31*b11 + n32*b21 + n33*b31 + n34*b41;
+        x32 = n31*b12 + n32*b22 + n33*b32 + n34*b42;
+        x33 = n31*b13 + n32*b23 + n33*b33 + n34*b43;
+        x34 = n31*b14 + n32*b24 + n33*b34 + n34*b44;
+        
+        x41 = n41*b11 + n42*b21 + n43*b31 + n44*b41;
+        x42 = n41*b12 + n42*b22 + n43*b32 + n44*b42;
+        x43 = n41*b13 + n42*b23 + n43*b33 + n44*b43;
+        x43 = n41*b14 + n42*b24 + n43*b34 + n44*b44;
+        
+        
+        
+        //multiplying and returning
+        return new Matrix( x11, x12, x13, x14, x21, x22, x23, x24, x31, x32, x33, x34, x41, x42, x43, x44 );
+        
+        
 	}
 
     // get the translation/positional componenet out of the matrix
     getPosition(): Vector {
+        return new Vector(this.elements[12], this.elements[13], this.elements[14]);
     }
     
     // get the x, y and z vectors out of the rotation part of the matrix
     getXVector(): Vector {
+        return new Vector(this.elements[0], this.elements[4], this.elements[8]);
     }
     getYVector(): Vector {
+        return new Vector(this.elements[1], this.elements[5], this.elements[9]);
     }
     getZVector(): Vector {
+        return new Vector(this.elements[2], this.elements[6], this.elements[10]);
     }
 }
 
@@ -166,19 +272,67 @@ export class Thing {
 
     // compute transform from position * rotation * scale and inverseTransform from their inverses 
     computeTransforms() {
+        var temp;
+        // make translation matrix
+        var pmatrix = Matrix.makeTranslation(this.position);
+        
+        // rotation matrix
+        var rmatrix = this.rotation;
+        
+        // make scale matrix
+        var smatrix = Matrix.makeScale(this.scale);
+        
+        // position * rotation * scale
+        temp = pmatrix.multiply(rmatrix);
+        temp = temp.multiply(smatrix);
+        
+        // set transform matrix
+        this.transform = temp;
+        
+        // create inverse translation matrix
+        var ipvector = Vector.times( -1, this.position);
+        var ipmatrix = Matrix.makeTranslation(ipvector);
+        
+        // inverse scale vector
+        var isvector = new Vector(1/this.scale.x, 1/this.scale.y, 1/this.scale.z);
+        
+        // create inverse scale matrix
+        var ismatrix = Matrix.makeScale(isvector);
+        
+        // create inverse rotation matrix
+        var irmatrix = Matrix.transpose(this.rotation);
+        
+        // math the inverse transform
+        temp = ismatrix.multiply(irmatrix);
+        temp = temp.multiply(ipmatrix);
+        this.inverseTransform = temp;
+        
     }    
 
     // add a child to this Thing.  Be sure to take care of setting the Thing's parent to this
     add(c: Thing) {
+        this.children.push(c);
+        c.parent = this;
     }
 
     // remove a Thing    
-    remove(c: Thing) {        
+    remove(c: Thing) {
+        // find index of child in this thing if it existss
+        var index = this.children.indexOf(c);
+        
+        // remove it if it exists
+        if (index > -1) {
+            this.children.splice(index, 1);
+        }       
     }
 
     // traverse the graph, executing the provided callback on this node and it's children
     // execute the callback before traversing the children
 	traverse ( callback: (obj: Thing ) => void ) {
+        callback(this);
+        for ( var x = 0; x < this.children.length; x++ ) {
+            callback(this.children[x]);
+        }
 	}    
 }
 
