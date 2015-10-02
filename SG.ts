@@ -88,8 +88,8 @@ export class Matrix {
 		te[ 1 ] = m.elements[1]; te[ 5 ] = m.elements[5]; te[ 9 ] = m.elements[9]; te[ 13 ] = m.elements[13];
 		te[ 2 ] = m.elements[2]; te[ 6 ] = m.elements[6]; te[ 10 ] = m.elements[10]; te[ 14 ] = m.elements[14];
 		te[ 3 ] = m.elements[3]; te[ 7 ] = m.elements[7]; te[ 11 ] = m.elements[11]; te[ 15 ] = m.elements[15];
+        return new Matrix(te[0], te[1], te[2], te[3], te[4], te[5], te[6], te[7], te[8], te[9], te[10], te[11], te[12], te[13], te[14], te[15]);
         
-        return new Matrix(te[0], te[4], te[8], te[12], te[1], te[5], te[9], te[13], te[2], te[6], te[10], te[14], te[3], te[7], te[11], te[15]);
     }     
 
     // copy the matrix to a new matrix
@@ -100,8 +100,8 @@ export class Matrix {
 		te[ 1 ] = m.elements[1]; te[ 5 ] = m.elements[5]; te[ 9 ] = m.elements[9]; te[ 13 ] = m.elements[13];
 		te[ 2 ] = m.elements[2]; te[ 6 ] = m.elements[6]; te[ 10 ] = m.elements[10]; te[ 14 ] = m.elements[14];
 		te[ 3 ] = m.elements[3]; te[ 7 ] = m.elements[7]; te[ 11 ] = m.elements[11]; te[ 15 ] = m.elements[15];
-        
-        return new Matrix(te[0], te[1], te[2], te[3], te[4], te[5], te[6], te[7], te[8], te[9], te[10], te[11], te[12], te[13], te[14], te[15]);
+        return new Matrix(te[0], te[4], te[8], te[12], te[1], te[5], te[9], te[13], te[2], te[6], te[10], te[14], te[3], te[7], te[11], te[15]);
+       
         
 	}
 
@@ -122,7 +122,7 @@ export class Matrix {
         var euz = degToRad(eu.z);      
         // x rotation matrix
         var xmatrix = new Matrix(1, 0, 0, 0,
-                                 0, Math.cos(eux), -Math.sin(eux), 0,
+                                 0, Math.cos(eux), -1 * Math.sin(eux), 0,
                                  0, Math.sin(eux), Math.cos(eux), 0,
                                  0, 0, 0, 1)
 
@@ -130,18 +130,19 @@ export class Matrix {
         // y rotation matrix
         var ymatrix = new Matrix(Math.cos(euy), 0, Math.sin(euy), 0,
                                  0, 1, 0, 0,
-                                 -Math.sin(euy), 0, Math.cos(euy), 0,
+                                 -1 * Math.sin(euy), 0, Math.cos(euy), 0,
                                  0, 0, 0, 1)
 
         // z rotation matrix
-        var zmatrix = new Matrix(Math.cos(euz), -Math.sin(euz), 0, 0,
+        var zmatrix = new Matrix(Math.cos(euz), -1 * Math.sin(euz), 0, 0,
                                  Math.sin(euz), Math.cos(euz), 0, 0,
                                  0, 0, 1, 0,
                                  0, 0, 0, 1)
         // multiply rotations
-        xmatrix = xmatrix.multiply(ymatrix);
-        xmatrix = xmatrix.multiply(zmatrix);
-        return xmatrix;
+        var temp = xmatrix;
+        temp = xmatrix.multiply(ymatrix);
+        temp = temp.multiply(zmatrix);
+        return temp;
 	}
 
     // create a new translation matrix from the input vector
@@ -195,7 +196,7 @@ export class Matrix {
         
         // math for multiplied matrix
         x11 = n11*b11 + n12*b21 + n13*b31 + n14*b41;
-        x12 = n11*b12 + n12*b22 + n13*b32 + n14*b42
+        x12 = n11*b12 + n12*b22 + n13*b32 + n14*b42;
         x13 = n11*b13 + n12*b23 + n13*b33 + n14*b43;
         x14 = n11*b14 + n12*b24 + n13*b34 + n14*b44;
         
@@ -391,8 +392,10 @@ export class Camera extends Thing {
     // get the focal length (distance from the viewplane) for a window of a specified
     // height and the camera's fovy    
     getFocalLength (height: number): number {
-        var t = height / 2;
-        return (t / (Math.tan(degToRad(this.fovy) / 2)));
+        var t = height/5;
+        var rads = degToRad(this.fovy);
+        var tangy = Math.tan(this.fovy/2);
+        return Math.abs(t/tangy);
     }
 }
  
@@ -459,16 +462,17 @@ export class Scene {
     // This function should account for all lights and an ambient light
     private shade(thing: Drawable, pos: Vector, normal: Vector): Color {
         // dot product of normal and vector
-        var ln = Math.abs(Vector.dot(pos, normal));
-        var total;
+        var ln = Math.abs(Vector.dot(normal, pos));
+        // initialize
+        var total = Color.black;
         // time to add up lights
         for ( var x = 0; x < this.lights.length; x++ ) {
-            
-            // cr * cl * dotproduct of l and n
-            var thiscontribution = Color.scale(ln, Color.times(this.lights[x].color, thing.surface.diffuse));
-            
-            // keep track of total light
-            total = Color.plus( total, thiscontribution );
+                
+                // cr * cl * dotproduct of l and n
+                var thiscontribution = Color.scale(ln, Color.times(this.lights[x].color, thing.surface.diffuse));
+                
+                // keep track of total light
+                total = Color.plus( total, thiscontribution );
         }
         
         // add ambient to it
@@ -551,8 +555,9 @@ export class Scene {
         
         // go upwards to get the inverse transform of the camera to the root
         var temp = this.camera.parent;
+        var final = this.camera.inverseTransform;
         while (temp != null) {
-            this.camera.inverseTransform.multiply(temp.inverseTransform);
+            final = final.multiply(temp.inverseTransform);
             temp = temp.parent;
         }
         
@@ -566,9 +571,9 @@ export class Scene {
             
 
             
-        // Find each object's entire transform to that object
+        // Find each object's entire transform to    that object
         var round2 = (obj: Thing) => {
-            obj.worldTransform.multiply(this.camera.inverseTransform);
+            obj.worldTransform = this.camera.inverseTransform.multiply(obj.worldTransform);
         }    
         this.world.traverse(round2);
         
@@ -582,13 +587,13 @@ export class Scene {
                     = obj.div.style["-o-transform"]
                     = obj.div.style["-ms-transform"] = transformStr;
                 this.domElement.appendChild(obj.div);
-                //var color = this.shade(obj, obj.worldTransform.getPosition(), obj.worldTransform.getZVector() );
-                //obj.div.style.backgroundColor = "rgb(" + String(color.r) + ", " + String(color.g) + ", " + String(color.b) + ")";
+                var color = this.shade(obj, obj.worldTransform.getPosition(), obj.worldTransform.getZVector() );
+                obj.div.style.backgroundColor = "rgb(" + String(color.r) + ", " + String(color.g) + ", " + String(color.b) + ")";
             }   
         }
         this.world.traverse(divs);
             
-
+        //this.camera.worldInverseTransform = Matrix.identity();
     }
 
 }
