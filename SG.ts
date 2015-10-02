@@ -236,7 +236,8 @@ export class Matrix {
         return new Vector(this.elements[1], this.elements[5], this.elements[9]);
     }
     getZVector(): Vector {
-        return new Vector(this.elements[2], this.elements[6], this.elements[10]);
+        //return new Vector(this.elements[2], this.elements[6], this.elements[10]);
+        return new Vector(this.elements[8], this.elements[9], this.elements[10]);
     }
 }
 
@@ -326,6 +327,7 @@ export class Thing {
         
         // remove it if it exists
         if (index > -1) {
+            this.children[index].parent = undefined;
             this.children.splice(index, 1);
         }       
     }
@@ -335,7 +337,7 @@ export class Thing {
 	traverse ( callback: (obj: Thing ) => void ) {
         callback(this);
         for ( var x = 0; x < this.children.length; x++ ) {
-            callback(this.children[x]);
+            this.children[x].traverse(callback);
         }
 	}    
 }
@@ -460,23 +462,29 @@ export class Scene {
     // This function should account for all lights and an ambient light
     private shade(thing: Drawable, pos: Vector, normal: Vector): Color {
         // dot product of normal and vector
-        var ln = Math.abs(Vector.dot(normal, pos));
+        var dot;
         // initialize
         var total = Color.black;
-        console.log("I have this many lights: " + this.lights.length);
+        var lightpos;
         // time to add up lights
         for ( var x = 0; x < this.lights.length; x++ ) {
-                
-                // cr * cl * dotproduct of l and n
-                var thiscontribution = Color.scale(ln, Color.times(this.lights[x].color, thing.surface.diffuse));
-                
-                // keep track of total light
-                total = Color.plus( total, thiscontribution );
+            
+            // vector object to light
+            lightpos = Vector.minus(this.lights[x].position, pos);
+            lightpos = Vector.norm(lightpos);
+            // find the dot product of this normalized vector and the normal of the surface
+            dot = Math.abs(Vector.dot(normal, lightpos));
+            
+            // cr * cl * dotproduct of l and n. Color contribution of this light
+            var thiscontribution = Color.scale(dot, Color.times(this.lights[x].color, thing.surface.diffuse));
+            
+            // keep track of total light
+            total = Color.plus( total, thiscontribution );
         }
         
         // add ambient to it
        total = Color.plus( total, this.ambient);
-       return total;
+       return Color.toDrawingColor(total);
     }
 
     // convenience function provided so you don't have to fight with this.  
@@ -549,9 +557,6 @@ export class Scene {
             if (obj instanceof Camera) {
                 this.camera = obj;
                 focalLength = this.camera.getFocalLength(this.height);
-                console.log("Height: " + this.height);
-                console.log("Focal length: " + focalLength);
-                console.log("Fovy: " + this.camera.fovy);
             }
         };
         
