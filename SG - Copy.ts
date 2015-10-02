@@ -536,16 +536,14 @@ export class Scene {
         var transformers = (obj: Thing) => {
         // stuff to do in the callback
             obj.computeTransforms();
-            this.world.worldTransform = this.world.transform;
-            // if (obj.parent != undefined && obj != undefined) {
+            // if (obj.parent != null) {
             //     obj.worldTransform = obj.transform.multiply(obj.parent.worldTransform);
             // }
-            
-            // if a light, add to array
+            // if light
             if (obj instanceof Light) {
                 this.lights.push(obj);
             }
-            //if a camera, save it
+            
             if (obj instanceof Camera) {
                 this.camera = obj;
                 focalLength = this.camera.getFocalLength(this.height);
@@ -567,17 +565,15 @@ export class Scene {
         
         this.world.traverse(worldts);
         
-        
-        
-        
         // go upwards to get the inverse transform of the camera to the root
         var temp = this.camera.parent;
+        var final = this.camera.inverseTransform;
         while (temp != null) {
-            this.camera.worldInverseTransform = this.camera.worldInverseTransform.multiply(temp.inverseTransform);
+            final = final.multiply(temp.inverseTransform);
             temp = temp.parent;
         }
+        this.camera.inverseTransform = final;
         
-        // set perspective of dom element from focallength
         this.domElement.style.perspective 
             = this.domElement.style["-webkit-perspective"]
             = this.domElement.style["-moz-perspective"]
