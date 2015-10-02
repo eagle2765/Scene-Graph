@@ -116,23 +116,26 @@ export class Matrix {
     // create a new rotation matrix from the input vector. 
     // eu.x, eu.y, eu.z contain the rotations in degrees around the three axes. 
     // Apply the rotations in the order x, y, z.
-    static makeRotationFromEuler (eu: Vector): Matrix {      
+    static makeRotationFromEuler (eu: Vector): Matrix {
+        var eux = degToRad(eu.x);
+        var euy = degToRad(eu.y);
+        var euz = degToRad(eu.z);      
         // x rotation matrix
         var xmatrix = new Matrix(1, 0, 0, 0,
-                                 0, Math.cos(eu.x), -Math.sin(eu.x), 0,
-                                 0, Math.sin(eu.x), Math.cos(eu.x), 0,
+                                 0, Math.cos(eux), -Math.sin(eux), 0,
+                                 0, Math.sin(eux), Math.cos(eux), 0,
                                  0, 0, 0, 1)
 
         
         // y rotation matrix
-        var ymatrix = new Matrix(Math.cos(eu.y), 0, Math.sin(eu.y), 0,
+        var ymatrix = new Matrix(Math.cos(euy), 0, Math.sin(euy), 0,
                                  0, 1, 0, 0,
-                                 -Math.sin(eu.y), 0, Math.cos(eu.y), 0,
+                                 -Math.sin(euy), 0, Math.cos(euy), 0,
                                  0, 0, 0, 1)
 
         // z rotation matrix
-        var zmatrix = new Matrix(Math.cos(eu.z), -Math.sin(eu.z), 0, 0,
-                                 Math.sin(eu.z), Math.cos(eu.z), 0, 0,
+        var zmatrix = new Matrix(Math.cos(euz), -Math.sin(euz), 0, 0,
+                                 Math.sin(euz), Math.cos(euz), 0, 0,
                                  0, 0, 1, 0,
                                  0, 0, 0, 1)
         // multiply rotations
@@ -389,7 +392,7 @@ export class Camera extends Thing {
     // height and the camera's fovy    
     getFocalLength (height: number): number {
         var t = height / 2;
-        return (t / (Math.tan(this.fovy / 2)));
+        return (t / (Math.tan(degToRad(this.fovy) / 2)));
     }
 }
  
@@ -525,11 +528,67 @@ export class Scene {
     // hint: you will need to traverse the graph more than once to do this.
     //
     render() {  
-        var renderPass1 = (obj: Thing) => {
+        var focalLength;
+        var transformers = (obj: Thing) => {
         // stuff to do in the callback
             obj.computeTransforms();
+            if (obj.parent != null) {
+                obj.worldTransform = obj.transform.multiply(obj.parent.worldTransform);
+            }
+            // if light
+            if (obj instanceof Light) {
+                this.lights.push(obj);
+            }
+            
+            if (obj instanceof Camera) {
+                this.camera = obj;
+
+                focalLength = this.camera.getFocalLength(this.height);
+            }
         };
         
-        this.world.traverse
+        this.world.traverse(transformers);
+        
+        // go upwards to get the inverse transform of the camera to the root
+        var temp = this.camera.parent;
+        while (temp != null) {
+            this.camera.inverseTransform.multiply(temp.inverseTransform);
+            temp = temp.parent;
+        }
+        
+
+        this.domElement.style.perspective 
+            = this.domElement.style["-webkit-perspective"]
+            = this.domElement.style["-moz-perspective"]
+            = this.domElement.style["-o-perpective"]
+            = this.domElement.style["-ms-perspective"] 
+            = focalLength.toString() + "px";
+            
+
+            
+        // Find each object's entire transform to that object
+        var round2 = (obj: Thing) => {
+            obj.worldTransform.multiply(this.camera.inverseTransform);
+        }    
+        this.world.traverse(round2);
+        
+        // Divs
+        var divs = (obj: Thing) => {
+            if (obj instanceof HTMLDivThing){
+                const transformStr = this.getObjectCSSMatrix(obj.worldTransform);
+                obj.div.style.transform 
+                    = obj.div.style["-webkit-transform"]
+                    = obj.div.style["-moz-transform"]
+                    = obj.div.style["-o-transform"]
+                    = obj.div.style["-ms-transform"] = transformStr;
+                this.domElement.appendChild(obj.div);
+                //var color = this.shade(obj, obj.worldTransform.getPosition(), obj.worldTransform.getZVector() );
+                //obj.div.style.backgroundColor = "rgb(" + String(color.r) + ", " + String(color.g) + ", " + String(color.b) + ")";
+            }   
+        }
+        this.world.traverse(divs);
+            
+
     }
+
 }
