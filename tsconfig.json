@@ -10,6 +10,7 @@
 	},
 	"files": [
 		"ex1.ts",
-		"SG.ts"
+		"SG.ts",
+		"a2.ts"
 	]
 }
