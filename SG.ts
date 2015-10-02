@@ -209,7 +209,7 @@ export class Matrix {
         x41 = n41*b11 + n42*b21 + n43*b31 + n44*b41;
         x42 = n41*b12 + n42*b22 + n43*b32 + n44*b42;
         x43 = n41*b13 + n42*b23 + n43*b33 + n44*b43;
-        x43 = n41*b14 + n42*b24 + n43*b34 + n44*b44;
+        x44 = n41*b14 + n42*b24 + n43*b34 + n44*b44;
         
         
         
@@ -525,6 +525,11 @@ export class Scene {
     // hint: you will need to traverse the graph more than once to do this.
     //
     render() {  
-
+        var renderPass1 = (obj: Thing) => {
+        // stuff to do in the callback
+            obj.computeTransforms();
+        };
+        
+        this.world.traverse
     }
 }
