@@ -388,6 +388,8 @@ export class Camera extends Thing {
     // get the focal length (distance from the viewplane) for a window of a specified
     // height and the camera's fovy    
     getFocalLength (height: number): number {
+        var t = height / 2;
+        return (t / (Math.tan(this.fovy / 2)));
     }
 }
  
@@ -453,6 +455,21 @@ export class Scene {
     // diffuse Lambertian color, as described in chapter 10.1.
     // This function should account for all lights and an ambient light
     private shade(thing: Drawable, pos: Vector, normal: Vector): Color {
+        // dot product of normal and vector
+        var ln = Math.abs(Vector.dot(pos, normal));
+        var total;
+        // time to add up lights
+        for ( var x = 0; x < this.lights.length; x++ ) {
+            
+            // cr * cl * dotproduct of l and n
+            var thiscontribution = Color.scale(ln, Color.times(this.lights[x].color, thing.surface.diffuse));
+            
+            // keep track of total light
+            total = Color.plus( total, thiscontribution );
+        }
+        
+        // add ambient to it
+        return Color.plus( total, this.ambient);
     }
 
     // convenience function provided so you don't have to fight with this.  
