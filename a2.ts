@@ -35,6 +35,9 @@ s1.world.add(n1);
 
 
 
+
+
+
 // running gif
 var p2 = document.createElement("div");
 p2.className = "panel";
@@ -175,6 +178,70 @@ var yup = 0;
 var camYRotation =20;
 var camYInc = 0.25;
 
+p1.onmouseenter = (e)=>{
+	p1.className = "apanel";
+}
+p1.onmouseout = (e)=> {
+	p1.className = "panel";
+}
+p2.onmouseenter = (e)=>{
+	p2.className = "apanel";
+}
+p2.onmouseout = (e)=> {
+	p2.className = "panel";
+
+}
+p3.onmouseenter = (e)=>{
+	p3.className = "apanel";
+}
+p3.onmouseout = (e)=> {
+	p3.className = "panel";
+}
+p4.onmouseenter = (e)=>{
+	p4.className = "apanel";
+}
+p4.onmouseout = (e)=> {
+	p4.className = "panel";
+}
+p5.onmouseenter = (e)=>{
+	p5.className = "apanel";
+}
+p5.onmouseout = (e)=> {
+	p5.className = "panel";
+}
+p6.onmouseenter = (e)=>{
+	p6.className = "apanel";
+}
+p6.onmouseout = (e)=> {
+	p6.className = "panel";
+
+}
+p7.onmouseenter = (e)=>{
+	p7.className = "apanel";
+}
+p7.onmouseout = (e)=> {
+	p7.className = "panel";
+}
+p8.onmouseenter = (e)=>{
+	p8.className = "apanel";
+}
+p8.onmouseout = (e)=> {
+	p8.className = "panel";
+}
+
+p9.onmouseenter = (e)=>{
+	p9.className = "apanel";
+}
+p9.onmouseout = (e)=> {
+	p9.className = "panel";
+}
+p10.onmouseenter = (e)=>{
+	p10.className = "apanel";
+}
+p10.onmouseout = (e)=> {
+	p10.className = "panel";
+}
+
 var s1renderFunc = function() {
 
 	
@@ -185,7 +252,7 @@ var s1renderFunc = function() {
 	cam1.rotation = sg.Matrix.makeRotationFromEuler(new sg.Vector(0,camYRotation,0));
 	
 	// spin clockwise
-	//zRotation -= 1;
+	zRotation -= 1;
 
 	n1.position = new sg.Vector(n1x + xTrans, n1y, n1z);
 	n1.rotation = sg.Matrix.makeRotationFromEuler(new sg.Vector(0 ,0 ,zRotation)); 
