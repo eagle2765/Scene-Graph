@@ -29,7 +29,7 @@ p1.innerText = "transZ(-200px)\n\ncamera trans(-100,\n50,200)";
 
 // put the div in the scene graph, pushed out a bit further down the z axis
 var n1 = new sg.HTMLDivThing(p1);
-n1.position = new sg.Vector(0,0,-200); 
+n1.position = new sg.Vector(0,0,-200); 	
 s1.world.add(n1);
 
 // render this graph into the div container.

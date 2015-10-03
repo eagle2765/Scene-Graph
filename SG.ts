@@ -566,7 +566,7 @@ export class Scene {
         // find object's world transforms
         var worldts = (obj: Thing) => {
             if (obj.parent != null) {
-                obj.worldTransform = obj.transform.multiply(obj.parent.worldTransform);
+                obj.worldTransform = obj.parent.worldTransform.multiply(obj.transform);
             }
         }
         
