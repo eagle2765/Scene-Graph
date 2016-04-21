@@ -75,3 +75,8 @@ Your grade will be based on satisfying the requirements described above.  You sh
 
 The TAs will at least test your SG.ts against the provided ```ex1.html``` and ```ex1.ts``` sample, as 
 well as running your ```a2.html``` submission.  **NOTE:** the TAs may also test your SG.ts with other test programs of their own creation, so you should make sure you implement the library fully, as requested.  
+
+
+My Result:
+
+![my result](result.gif)
